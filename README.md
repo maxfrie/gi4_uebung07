@@ -9,7 +9,7 @@ also
 
 &sum; a<sub>i,j</sub> x<sub>j</sub> = b<sub>i</sub>, i &isin; {1,...,n}
 	
-ermittelt. Dabei soll das Jacobi-Verfahren verwendet werden, welches die *i*-te Gleichung nach x<sub>i</sub> auflöst. Hieraus ergibt sich folgende Iterationsvorschrift für den *m+1*-ten Iterati-onsschritt:
+ermittelt. Dabei soll das Jacobi-Verfahren verwendet werden, welches die *i*-te Gleichung nach x<sub>i</sub> auflöst. Hieraus ergibt sich folgende Iterationsvorschrift für den *m+1*-ten Iterationsschritt:
 
 x<sub>i</sub><sup>m+1</sup> = 1 / a<sub>i,i</sub> (b<sub>i</sub> - &sum; a<sub>i,j</sub><sup>m</sup>)
 
