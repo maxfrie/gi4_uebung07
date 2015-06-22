@@ -110,6 +110,11 @@ int main(int argc, char **argv)
 		}
 
 	}
+	
+	for (i = 0; i < MAX_THREADS; i++) {
+		pthread_cancel(threads[i]);
+	}	
+
 	gettimeofday(&end, NULL);
 
 	if (MATRIX_SIZE < 16) {
