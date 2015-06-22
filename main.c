@@ -4,9 +4,13 @@
 #include <string.h>
 #include <math.h>
 #include <sys/time.h>
+#include <pthread.h>
 #include "init_matrix.h"
 
 #define MATRIX_SIZE (1024)
+#define MAX_THREADS 2
+
+pthread_barrier_t bstart, bend;
 
 double **A;
 double *b;
@@ -14,12 +18,47 @@ double *X;
 double *X_old;
 double *temp;
 
+struct thread_arg {
+	unsigned int start;
+	unsigned int end;
+};
+
+void* thread_func(void* void_arg)
+{
+	struct thread_arg args = *((struct thread_arg*) void_arg);
+	unsigned int i, j;
+	double sum;	
+	
+	while(1)
+	{
+	 /* calculate next iteration step of X */
+         pthread_barrier_wait(&bstart);
+	       for (i = args.start; i < args.end; i++) {
+                        sum = 0.0; // initialisiere Summe mit 0
+                        for (j = 0; j < MATRIX_SIZE; j++) {
+                                 if (i != j) {
+                                        sum += A[i][j] * X_old[j];
+                                }
+                        }
+
+                        X[i] = (b[i] - sum) / A[i][i];
+                }
+	pthread_barrier_wait(&bend);
+	}
+
+	return (void*) i;
+}	
+
 int main(int argc, char **argv)
 {
 	unsigned int i, j;
 	unsigned int iterations = 0;
 	double error, xi, norm, max = 0.0;
 	struct timeval start, end;
+
+	double sum;
+	struct thread_arg thr_arg[MAX_THREADS];
+	pthread_t threads[MAX_THREADS];
 
 	printf("\nInitialize system of linear equations...\n");
 	/* allocate memory for the system of linear equations */
@@ -38,7 +77,39 @@ int main(int argc, char **argv)
 	gettimeofday(&start, NULL);
 
 	/* TODO: Hier muss die Aufgabe geloest werden */
+	pthread_barrier_init(&bstart, NULL, MAX_THREADS+1);
+	pthread_barrier_init(&bend, NULL, MAX_THREADS+1);
 
+	for (i = 0; i < MAX_THREADS; i++) {
+		thr_arg[i].start = i * (MATRIX_SIZE/MAX_THREADS);
+		thr_arg[i].end = (1+i) * (MATRIX_SIZE/MAX_THREADS);
+
+		pthread_create(&threads[i], NULL, thread_func, &thr_arg[i]);
+	}
+
+	while(1)
+	{
+		// Start threads
+		pthread_barrier_wait(&bstart);
+		// end threads for critical area
+		pthread_barrier_wait(&bend);
+		iterations++;
+		/* Berechne Euklidischen Abstand */
+		sum = 0.0;
+		for (i = 0; i < MATRIX_SIZE; i++) {
+			sum += (X_old[i] - X[i])*(X_old[i] - X[i]);
+		}
+
+		/* Prüfe Abbruchbedingung */
+		if ( sum < 0.0000001 * MATRIX_SIZE)
+			break;
+	
+		/* swap pointers to save X_old */
+		for( i = 0; i < MATRIX_SIZE; i++) {
+			X_old[i] = X[i];
+		}
+
+	}
 	gettimeofday(&end, NULL);
 
 	if (MATRIX_SIZE < 16) {
