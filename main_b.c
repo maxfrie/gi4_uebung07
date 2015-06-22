@@ -8,7 +8,9 @@
 #include "init_matrix.h"
 
 #define MATRIX_SIZE (1024)
-#define MAX_THREADS 2
+#define MAX_THREADS 4
+
+void euklid_dist(int size, double* sum, double* X, double* X_old);
 
 pthread_barrier_t bstart, bend;
 
@@ -96,9 +98,7 @@ int main(int argc, char **argv)
 		iterations++;
 		/* Berechne Euklidischen Abstand */
 		sum = 0.0;
-		for (i = 0; i < MATRIX_SIZE; i++) {
-			sum += (X_old[i] - X[i])*(X_old[i] - X[i]);
-		}
+		euklid_dist(MATRIX_SIZE, &sum, X, X_old);
 
 		/* Prüfe Abbruchbedingung */
 		if ( sum < 0.0000001 * MATRIX_SIZE)

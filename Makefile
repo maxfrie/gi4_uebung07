@@ -4,7 +4,7 @@ CXX = g++
 # optimzation flags
 #CFLAGS = -Wall -O3
 # flags for debugging
-CFLAGS = -Wall -O0 -g -pthread
+CFLAGS = -m32 -Wall -O0 -g -pthread
 CXXFLAGS = $(CFLAGS)
 LDFLAGS = -lm
 RM = rm -rf
@@ -14,7 +14,7 @@ ASMFLAGS = -f elf32 -O0 -g -F dwarf
 NAME = jacobi_v1
 C_source = main.c init_matrix.c
 CPP_source =
-ASM_source =
+ASM_source = euklid_dist.asm
 
 # extend this for other object files
 OBJS += $(patsubst %.cpp, %.o, $(filter %.cpp, $(CPP_source)))
