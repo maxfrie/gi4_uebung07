@@ -8,7 +8,7 @@
 #include "init_matrix.h"
 
 #define MATRIX_SIZE (1024)
-#define MAX_THREADS 2
+#define MAX_THREADS 4
 
 pthread_barrier_t bstart, bend;
 
@@ -46,14 +46,14 @@ void* thread_func(void* void_arg)
 	pthread_barrier_wait(&bend);
 	}
 
-	return (void*) i;
+	return NULL;
 }	
 
 int main(int argc, char **argv)
 {
 	unsigned int i, j;
 	unsigned int iterations = 0;
-	double error, xi, norm, max = 0.0;
+	double error, max = 0.0;
 	struct timeval start, end;
 
 	double sum;
