@@ -111,9 +111,14 @@ int main(int argc, char **argv)
 
 	}
 	
+	/* cancel used threads */	
 	for (i = 0; i < MAX_THREADS; i++) {
 		pthread_cancel(threads[i]);
 	}	
+
+	/* destroy barriers */
+	pthread_barrier_destroy(&bstart);
+	pthread_barrier_destroy(&bend);
 
 	gettimeofday(&end, NULL);
 
